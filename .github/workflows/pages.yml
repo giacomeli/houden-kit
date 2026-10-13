@@ -1,0 +1,53 @@
+name: Pages
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+
+concurrency:
+    group: pages
+    cancel-in-progress: false
+
+jobs:
+    build:
+        name: Build do playground
+        # Ativado pelo dono do repositório: Settings -> Pages -> GitHub Actions, e a variável PAGES_ENABLED=true.
+        if: ${{ vars.PAGES_ENABLED == 'true' }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+
+            - run: npm ci
+
+            - run: npm ci --prefix playground
+
+            - name: Build com o base do Pages
+              run: npm run playground:build
+              env:
+                  PLAYGROUND_BASE: /houden-kit/
+
+            - uses: actions/upload-pages-artifact@v3
+              with:
+                  path: playground/dist
+
+    deploy:
+        name: Publicação no Pages
+        needs: build
+        runs-on: ubuntu-latest
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - id: deployment
+              uses: actions/deploy-pages@v4

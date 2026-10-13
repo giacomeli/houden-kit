@@ -1,0 +1,125 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.4.12/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": true,
+        "includes": ["**", "!tests/parity/fixtures", "!playground/dist"]
+    },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 120
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "suspicious": {
+                "noExplicitAny": "off"
+            },
+            "style": {
+                "noNonNullAssertion": "off",
+                "useImportType": "off"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "trailingCommas": "all",
+            "semicolons": "asNeeded"
+        }
+    },
+    "css": {
+        "parser": {
+            "cssModules": false,
+            "tailwindDirectives": true
+        },
+        "formatter": {
+            "enabled": true
+        },
+        "linter": {
+            "enabled": false
+        }
+    },
+    "assist": {
+        "enabled": true,
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "overrides": [
+        {
+            "includes": [
+                "src/components/Form/Input/index.tsx",
+                "src/components/Form/InputChips/index.tsx",
+                "src/components/Form/MultiSearchSelect/index.tsx",
+                "src/components/Form/MultiSelect/index.tsx",
+                "src/components/Form/SearchSelect/index.tsx",
+                "src/components/Form/Select/index.tsx",
+                "src/components/Layout/FilterDrawer/index.tsx",
+                "src/components/TanStackTable/TanStackPaginationBar.tsx",
+                "src/styles/theme.css"
+            ],
+            "formatter": {
+                "enabled": false
+            }
+        },
+        {
+            "includes": [
+                "src/components/Form/**",
+                "src/components/Layout/Tooltip/**",
+                "src/components/Layout/Alert/**",
+                "src/hooks/useClickOutside.ts",
+                "src/hooks/__tests__/useClickOutside.test.ts",
+                "src/utils/toast/**",
+                "src/components/TanStackTable/**",
+                "src/components/Layout/Modal/**",
+                "src/components/Layout/Avatar/**",
+                "src/components/Layout/FilterDrawer/**",
+                "src/components/Layout/Aside/**",
+                "src/components/Layout/UlMenu/**",
+                "src/components/Layout/LiMenu/**",
+                "src/components/Dashboard/**",
+                "src/components/Chart/**",
+                "src/components/Chat/MessageTimestamp/**",
+                "src/components/Layout/Sidebar/**",
+                "src/components/Layout/Loader/**",
+                "src/components/Layout/RouteProgressBar.tsx",
+                "src/components/Layout/__tests__/RouteProgressBar.test.tsx"
+            ],
+            "linter": {
+                "rules": {
+                    "a11y": {
+                        "noLabelWithoutControl": "off",
+                        "noStaticElementInteractions": "off",
+                        "useKeyWithClickEvents": "off",
+                        "noSvgWithoutTitle": "off",
+                        "useButtonType": "off"
+                    },
+                    "complexity": {
+                        "useOptionalChain": "off"
+                    },
+                    "correctness": {
+                        "noUnusedFunctionParameters": "off",
+                        "noUnusedImports": "off",
+                        "useExhaustiveDependencies": "off"
+                    },
+                    "suspicious": {
+                        "noArrayIndexKey": "off"
+                    },
+                    "performance": {
+                        "noAccumulatingSpread": "off"
+                    }
+                }
+            }
+        }
+    ]
+}

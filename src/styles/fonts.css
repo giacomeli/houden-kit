@@ -1,0 +1,16 @@
+/*
+ * houden-kit/fonts.css
+ *
+ * Inter variável servida do próprio pacote (sem CDN), para funcionar sob `default-src 'self'`.
+ * Separado do theme.css para que um app Next.js possa manter o `next/font`.
+ *
+ * No app de origem, o `next/font` aplica a Inter no <body>; aqui o mesmo efeito vem do `--font-sans`,
+ * que o preflight do Tailwind usa como fonte padrão do documento.
+ */
+@import "@fontsource-variable/inter";
+
+@theme {
+    --font-sans:
+        "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+        "Segoe UI Symbol", "Noto Color Emoji";
+}

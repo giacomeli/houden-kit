@@ -1,0 +1,173 @@
+/*
+ * houden-kit/theme.css
+ *
+ * Temas houdenTheme e houdenThemeDark para Tailwind 4 + DaisyUI 5. O consumidor importa este arquivo depois de
+ * `@import "tailwindcss"`; a lib não entrega CSS pré-compilado (ver README, seção CSS).
+ *
+ * Origem: app de origem, src/styles/globals.css no commit 1e5c1c3efd3f51ea48c2277ec0961c56e44985e8.
+ * Os trechos abaixo são cópia literal das linhas indicadas, com os temas renomeados para houdenTheme e
+ * houdenThemeDark; só o `@import "tailwindcss"` (linha 1) ficou de fora, porque pertence ao consumidor.
+ */
+
+/* CSS do react-toastify 10, importado (não injetado em runtime), para funcionar sob CSP sem inline. */
+@import "react-toastify/dist/ReactToastify.css";
+
+/* globals.css, linhas 2 a 67: plugin, temas e variante dark */
+@plugin "daisyui";
+
+/* Houden Light Theme */
+@plugin "daisyui/theme" {
+    name: "houdenTheme";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    --color-base-100: oklch(96.86% 0.0066 264.53);
+    --color-base-200: oklch(93.66% 0.0085 264.53);
+    --color-base-300: oklch(86.42% 0.0127 264.53);
+    --color-base-content: oklch(27.39% 0.0255 256.85);
+
+    --color-primary: oklch(18.9% 0.0766 262.87);
+    --color-primary-content: oklch(100% 0 0);
+    --color-secondary: oklch(28.49% 0.0831 262.87);
+    --color-secondary-content: oklch(100% 0 0);
+    --color-accent: oklch(69.05% 0.0948 207.36);
+    --color-accent-content: oklch(18.9% 0.0766 262.87);
+    --color-neutral: oklch(65.18% 0 0);
+    --color-neutral-content: oklch(100% 0 0);
+
+    --color-info: oklch(58.95% 0.1474 227.39);
+    --color-info-content: oklch(100% 0 0);
+    --color-success: oklch(73.49% 0.1734 155.99);
+    --color-success-content: oklch(100% 0 0);
+    --color-warning: oklch(71.34% 0.1948 52.35);
+    --color-warning-content: oklch(18.9% 0.0766 262.87);
+    --color-error: oklch(48.04% 0.1912 24.08);
+    --color-error-content: oklch(100% 0 0);
+}
+
+/* Houden Dark Theme */
+@plugin "daisyui/theme" {
+    name: "houdenThemeDark";
+    default: false;
+    prefersdark: true;
+    color-scheme: dark;
+
+    --color-base-100: oklch(20.77% 0.0286 264.53);
+    --color-base-200: oklch(27.39% 0.0255 256.85);
+    --color-base-300: oklch(35.6% 0.0227 257.52);
+    --color-base-content: oklch(96.68% 0.0043 264.53);
+
+    --color-primary: oklch(24.77% 0.0727 255.67);
+    --color-primary-content: oklch(96.68% 0.0043 264.53);
+    --color-secondary: oklch(32.68% 0.0737 249.56);
+    --color-secondary-content: oklch(96.68% 0.0043 264.53);
+    --color-accent: oklch(69.05% 0.0948 207.36);
+    --color-accent-content: oklch(20.77% 0.0286 264.53);
+    --color-neutral: oklch(35.6% 0.0227 257.52);
+    --color-neutral-content: oklch(96.68% 0.0043 264.53);
+
+    --color-info: oklch(58.95% 0.1474 227.39);
+    --color-info-content: oklch(100% 0 0);
+    --color-success: oklch(73.49% 0.1734 155.99);
+    --color-success-content: oklch(100% 0 0);
+    --color-warning: oklch(71.34% 0.1948 52.35);
+    --color-warning-content: oklch(20.77% 0.0286 264.53);
+    --color-error: oklch(48.04% 0.1912 24.08);
+    --color-error-content: oklch(100% 0 0);
+}
+
+/* Custom variant for dark mode with Tailwind's dark: prefix */
+@custom-variant dark (&:where([data-theme="houdenThemeDark"], [data-theme="houdenThemeDark"] *));
+
+/* Escaneia o próprio dist da lib, para gerar as classes usadas só dentro dos componentes. */
+@source "./";
+
+/* globals.css, linhas 69 a 71 (Chart) */
+canvas {
+    @apply !w-full !h-full !max-h-[535px];
+}
+
+/* globals.css, linhas 78 a 84 (campos desabilitados) */
+input:disabled {
+    @apply !bg-white dark:!bg-base-300 !text-black dark:!text-base-content !cursor-not-allowed;
+}
+
+select:disabled {
+    @apply !bg-white dark:!bg-base-300 !text-black dark:!text-base-content;
+}
+
+/* globals.css, linhas 140 a 155 (Select) */
+/*
+ * DaisyUI 5 liga "appearance: base-select" em navegadores que suportam essa
+ * API (Chrome recente). Nesse modo, o navegador força overflow visível na
+ * caixa do select para permitir o popover customizado de opções — o que
+ * anula o "text-overflow: ellipsis" que o próprio DaisyUI declara, e opções
+ * com texto longo estouram a largura do select. Desligamos explicitamente.
+ */
+.select,
+.select select {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+}
+
+/* globals.css, linhas 163 a 177 (campos de formulário e buscas da Sidebar) */
+input {
+    @apply !font-normal;
+}
+
+select {
+    @apply !font-normal;
+}
+
+input,
+select,
+textarea {
+    outline: none !important;
+    outline-width: 0 !important;
+    box-shadow: none !important;
+}
+
+/* globals.css, linhas 289 a 316 (FilterDrawer e painel contextual da Sidebar) */
+/* === FilterDrawer slide-in animation === */
+@keyframes slide-in-right {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in-right {
+    animation: slide-in-right 0.2s ease-out;
+}
+
+/* Painel contextual da navegação lateral: entra da esquerda, colado ao trilho.
+   Mesmo padrão do FilterDrawer — a saída é imediata, porque o componente desmonta. */
+@keyframes slide-in-left {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+.animate-slide-in-left {
+    animation: slide-in-left 0.2s ease-out;
+}
+
+/* globals.css, linhas 362 a 369 (entrada de mensagem no chat) */
+@keyframes message-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.message-new {
+    animation: message-in 0.25s ease-out;
+}

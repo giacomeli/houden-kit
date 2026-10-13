@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.parity/
+coverage/
+playground/dist/
+*.tgz
+.DS_Store
+*.log
+.readme-snippets/
+specs/

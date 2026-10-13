@@ -1,0 +1,63 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    verify:
+        name: Verificação (Node ${{ matrix.node }})
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                node: [22, 24]
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node }}
+                  cache: npm
+
+            - run: npm ci
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Tipos
+              run: npm run typecheck
+
+            # A paridade usa as fixtures versionadas em tests/parity/fixtures; o CI não precisa do app de origem.
+            - name: Testes
+              run: npm test
+
+            - name: Build
+              run: npm run build
+
+            - name: Varredura do dist
+              run: npm run test:dist
+
+            - name: publint e attw
+              run: npm run check:package
+
+            - name: Consumidor do tarball
+              run: npm run check:consumer
+
+            - name: Playground
+              run: |
+                  npm ci --prefix playground
+                  npm run playground:build
+
+            # O ubuntu-latest já traz o Google Chrome; o script o encontra em /usr/bin/google-chrome.
+            - name: CSP no navegador
+              run: npm run playground:check-csp

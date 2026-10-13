@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "types": ["vite/client"],
+        "skipLibCheck": true,
+        "strict": true,
+        "noEmit": true,
+        "module": "esnext",
+        "moduleResolution": "bundler",
+        "isolatedModules": true,
+        "jsx": "react-jsx",
+        "target": "ES2022"
+    },
+    "include": ["src", "vite.config.ts"]
+}

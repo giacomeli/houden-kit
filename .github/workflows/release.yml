@@ -1,0 +1,50 @@
+name: Release
+
+on:
+    push:
+        branches: [main]
+
+concurrency: release-${{ github.ref }}
+
+permissions:
+    contents: write
+    pull-requests: write
+    # Trusted publishing do npm (OIDC): sem NPM_TOKEN, com provenance.
+    id-token: write
+
+jobs:
+    release:
+        name: Versão e publicação
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+
+            # Trusted publishing exige npm 11.5.1 ou mais novo.
+            - name: npm atualizado
+              run: npm install -g npm@^11.5.1
+
+            - run: npm ci
+
+            - name: Verificações antes de publicar
+              run: |
+                  npm run lint
+                  npm run typecheck
+                  npm test
+                  npm run build
+                  npm run test:dist
+                  npm run check:package
+
+            # Com changesets pendentes, abre ou atualiza o PR de versão. Ao mesclar esse PR, publica no npm.
+            - uses: changesets/action@v1
+              with:
+                  publish: npm run release
+                  title: Versão do houden-kit
+                  commit: Versão do houden-kit
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  NPM_CONFIG_PROVENANCE: true
