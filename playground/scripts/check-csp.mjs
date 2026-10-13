@@ -43,6 +43,23 @@ const INTERACTIONS = {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
+/** Encerra o processo e espera ele sair. No Linux, o Chrome ainda grava no perfil logo depois do kill. */
+async function stopProcess(child) {
+    if (!child || child.exitCode !== null || child.signalCode !== null) return
+    const exited = new Promise((resolve) => child.once('exit', resolve))
+    child.kill()
+    await Promise.race([exited, sleep(5000)])
+}
+
+/** A limpeza do perfil temporário não pode derrubar a verificação. */
+function removeProfile(dir) {
+    try {
+        rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 })
+    } catch (error) {
+        console.warn(`check-csp -> não consegui apagar ${dir}: ${error.code ?? error}`)
+    }
+}
+
 function chromePath() {
     const candidates = [
         process.env.CHROME_PATH,
@@ -255,10 +272,9 @@ async function runSuite(csp) {
         }
         cdp.close()
     } finally {
-        chrome?.kill()
-        preview.kill()
-        rmSync(profileDir, { recursive: true, force: true })
-        await sleep(300)
+        await stopProcess(chrome)
+        await stopProcess(preview)
+        removeProfile(profileDir)
     }
     return { problems: [...new Set(problems)], visits }
 }
