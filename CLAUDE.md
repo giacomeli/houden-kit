@@ -4,7 +4,7 @@ Orientações para trabalhar neste repositório. A arquitetura está em [docs/AR
 
 ## O que é
 
-O houden-kit é uma biblioteca de UI em React 19, Tailwind CSS 4 e DaisyUI 5, nascida do port dos componentes de um app interno (o app de origem). É publicada no npm como `houden-kit` e consumida pelos apps gerados pelo template do AiSpecPlataform e, no futuro, pelo próprio app de origem.
+O houden-kit é uma biblioteca de UI em React 19, Tailwind CSS 4 e DaisyUI 5, nascida do port dos componentes de um app interno (o app de origem). É publicada no npm como `houden-kit` e consumida pelos apps gerados por um template interno e, no futuro, pelo próprio app de origem.
 
 ## Invariantes
 

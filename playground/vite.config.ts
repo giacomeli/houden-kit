@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
 
-/** Header CSP atual do template (AiSpecPlataform): nada de inline, CDN ou origem externa. */
+/** Header CSP atual do template: nada de inline, CDN ou origem externa. */
 export const TEMPLATE_CSP = "default-src 'self'; connect-src 'self'"
 
 /**
