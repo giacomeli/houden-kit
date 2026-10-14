@@ -43,12 +43,46 @@ const INTERACTIONS = {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-/** Encerra o processo e espera ele sair. No Linux, o Chrome ainda grava no perfil logo depois do kill. */
+// Cada filho roda num grupo de processos próprio, e o encerramento atinge o grupo inteiro. O `npx` sobe o vite
+// por `sh -c`; no Linux, o `dash` não troca de processo pelo vite, recebe o SIGTERM, morre e deixa o vite órfão,
+// ainda servindo na porta. O Chrome também tem processos auxiliares que gravam no perfil depois do principal sair.
+const running = new Set()
+
+function spawnGroup(command, args, options) {
+    const child = spawn(command, args, { ...options, detached: true })
+    running.add(child)
+    return child
+}
+
+function killGroup(child, signal) {
+    try {
+        process.kill(-child.pid, signal)
+    } catch {
+        // o grupo já acabou
+    }
+}
+
+/** Encerra o grupo do processo e espera o líder sair; se não sair em 5 s, força. */
 async function stopProcess(child) {
-    if (!child || child.exitCode !== null || child.signalCode !== null) return
-    const exited = new Promise((resolve) => child.once('exit', resolve))
-    child.kill()
-    await Promise.race([exited, sleep(5000)])
+    if (!child?.pid) return
+    const exited =
+        child.exitCode === null && child.signalCode === null
+            ? new Promise((resolve) => child.once('exit', () => resolve(true)))
+            : Promise.resolve(true)
+    killGroup(child, 'SIGTERM')
+    if (!(await Promise.race([exited, sleep(5000).then(() => false)]))) killGroup(child, 'SIGKILL')
+    running.delete(child)
+}
+
+// Em grupo próprio, os filhos não recebem o Ctrl+C do terminal; sem isto, o vite e o Chrome ficariam rodando.
+for (const [signal, code] of [
+    ['SIGINT', 130],
+    ['SIGTERM', 143],
+]) {
+    process.once(signal, () => {
+        for (const child of running) killGroup(child, 'SIGKILL')
+        process.exit(code)
+    })
 }
 
 /** A limpeza do perfil temporário não pode derrubar a verificação. */
@@ -87,8 +121,21 @@ async function waitForServer() {
     throw new Error('check-csp -> o preview não respondeu')
 }
 
+/** A rodada confere o header de quem responde na porta; um servidor que sobrou responderia no lugar do novo. */
+async function waitForFreePort() {
+    for (let attempt = 0; attempt < 40; attempt++) {
+        try {
+            await fetch(`${ORIGIN}/`)
+        } catch {
+            return
+        }
+        await sleep(250)
+    }
+    throw new Error(`check-csp -> a porta ${PORT} continua ocupada por outro servidor`)
+}
+
 function launchChrome(profileDir) {
-    const chrome = spawn(
+    const chrome = spawnGroup(
         chromePath(),
         [
             '--headless=new',
@@ -175,7 +222,8 @@ function interactionScript(steps) {
 
 /** Uma rodada completa sob um header CSP. Devolve os problemas encontrados e o número de visitas. */
 async function runSuite(csp) {
-    const preview = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], {
+    await waitForFreePort()
+    const preview = spawnGroup('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], {
         cwd: playgroundDir,
         stdio: 'ignore',
         env: { ...process.env, PLAYGROUND_CSP: csp },
